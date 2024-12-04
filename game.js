@@ -1,7 +1,12 @@
+const KEYS = {
+    LEFT: 37,
+    RIGHT: 39
+};
+
 let game = {
     ctx: null,
-    ball: null,
     platform: null,
+    ball: null,
     blocks: [],
     rows: 4,
     cols: 8,
@@ -16,17 +21,15 @@ let game = {
         this.ctx = document.getElementById("mycanvas").getContext("2d");
         this.setEvents();
     },
+
     setEvents() {
         window.addEventListener("keydown", e => {
-            if (e.keyCode === 37) {
-                this.platform.dx = -this.platform.velocity;
-            } else if (e.keyCode === 39) {
-                this.platform.dx = this.platform.velocity;
+            if (e.keyCode === KEYS.LEFT || e.keyCode === KEYS.RIGHT) {
+                this.platform.start(e.keyCode);
             }
         });
-
         window.addEventListener("keyup", e => {
-            this.platform.dx = 0;
+            this.platform.stop();
         });
     },
 
@@ -34,7 +37,7 @@ let game = {
         let loaded = 0;
         let required = Object.keys(this.sprites).length;
         let onImageLoad = () => {
-            ++loaded
+            ++loaded;
             if (loaded >= required) {
                 callback();
             }
@@ -46,9 +49,10 @@ let game = {
             this.sprites[key].addEventListener("load", onImageLoad);
         }
     },
+
     create() {
         for (let row = 0; row < this.rows; row++) {
-            for (let col=0; col < this.cols; col++) {
+            for (let col = 0; col < this.cols; col++) {
                 this.blocks.push({
                     x: 64 * col + 65,
                     y: 24 * row + 35
@@ -71,8 +75,7 @@ let game = {
 
     render() {
         this.ctx.drawImage(this.sprites.background, 0, 0);
-        this.ctx.drawImage(this.sprites.ball, 0, 0, this.ball.width, this.ball.height,
-            this.ball.x, this.ball.y, this.ball.width, this.ball.height);
+        this.ctx.drawImage(this.sprites.ball, 0, 0, this.ball.width, this.ball.height, this.ball.x, this.ball.y, this.ball.width, this.ball.height);
         this.ctx.drawImage(this.sprites.platform, this.platform.x, this.platform.y);
         this.renderBlocks();
     },
@@ -100,8 +103,26 @@ game.ball = {
 };
 
 game.platform = {
+    velocity: 6,
+    dx: 0,
     x: 280,
-    y: 300
+    y: 300,
+    start(direction) {
+        if (direction === KEYS.LEFT) {
+            this.dx = -this.velocity;
+        } else if (direction === KEYS.RIGHT) {
+            this.dx = this.velocity;
+        }
+    },
+    stop() {
+        this.dx = 0;
+    },
+    move() {
+        if (this.dx) {
+            this.x += this.dx;
+            game.ball.x += this.dx;
+        }
+    }
 };
 
 window.addEventListener("load", () => {
