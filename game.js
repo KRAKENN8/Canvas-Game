@@ -137,22 +137,25 @@ let game = {
     },
 
     render() {
-        this.ctx.clearRect(0, 0, this.width, this.height)
+        this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.drawImage(this.sprites.background, 0, 0);
         this.ctx.drawImage(this.sprites.ball, this.ball.frame * this.ball.width, 0,
             this.ball.width, this.ball.height, this.ball.x, this.ball.y, this.ball.width, this.ball.height);
-        this.ctx.drawImage(this.sprites.platform, this.platform.x, this.platform.y);
+        this.ctx.drawImage(this.sprites.platform, this.platform.x, this.platform.y, this.platform.width, this.platform.height);
         this.renderBlocks();
         this.ctx.fillText("Счет: " + this.score, 15, 20);
-    },
+    },    
 
     renderBlocks() {
         for (let block of this.blocks) {
             if (block.active) {
-                this.ctx.drawImage(this.sprites.block, block.x, block.y);
+                const blockWidth = 60;
+                const blockHeight = 20;
+                this.ctx.drawImage(this.sprites.block, block.x, block.y, blockWidth, blockHeight);
             }
         }
     },
+    
 
     start: function() {
         this.init();
